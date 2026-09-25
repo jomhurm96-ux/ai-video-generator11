@@ -4,10 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Video Generator Studio</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    body { background-color: #0b0f19; color: #f3f4f6; }
+    body { background-color: #0b0f19; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
   </style>
 </head>
 <body class="min-h-screen p-4 md:p-8 max-w-5xl mx-auto flex flex-col gap-6">
@@ -19,14 +21,14 @@
         AI Video Studio
       </h1>
       <p class="text-xs md:text-sm text-gray-400 mt-0.5">
-        Powered by Replicate AI (Real Video Generation)
+        Text/Image to Video, Multi-language AI Voice & Character Consistency
       </p>
     </div>
     
-    <!-- API Key Input -->
-    <div class="flex items-center gap-2 bg-gray-900 border border-gray-800 px-3 py-1.5 rounded-xl">
+    <!-- API Token Input -->
+    <div class="flex items-center gap-2 bg-gray-900 border border-gray-800 px-3 py-1.5 rounded-xl shadow-inner">
       <i data-lucide="key" class="w-4 h-4 text-amber-400"></i>
-      <input type="password" id="api-key" placeholder="Replicate API Token (r8_...)" class="bg-transparent text-xs text-white focus:outline-none w-48 md:w-56 placeholder-gray-500" />
+      <input type="password" id="api-key" placeholder="Replicate Token (r8_...)" class="bg-transparent text-xs text-white focus:outline-none w-48 md:w-56 placeholder-gray-500" />
     </div>
   </header>
 
@@ -34,7 +36,7 @@
   <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
     
     <!-- Controls (Left 7 Cols) -->
-    <div class="md:col-span-7 bg-gray-900/80 border border-gray-800 p-5 rounded-2xl flex flex-col gap-4">
+    <div class="md:col-span-7 bg-gray-900/80 border border-gray-800 p-5 rounded-2xl flex flex-col gap-4 shadow-xl">
       
       <!-- Mode Selection Tabs -->
       <div class="flex bg-gray-950 p-1 rounded-xl border border-gray-800 text-sm font-medium">
@@ -46,13 +48,34 @@
         </button>
       </div>
 
+      <!-- Image Upload Area (Hidden by default) -->
+      <div id="image-upload-box" class="hidden flex-col gap-2">
+        <label class="text-xs font-semibold text-gray-400 uppercase">Source Image</label>
+        <div class="border-2 border-dashed border-gray-700 hover:border-indigo-500 rounded-xl p-4 text-center cursor-pointer relative bg-gray-950/50 transition">
+          <input type="file" id="image-input" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewImage(event)" />
+          <div id="upload-placeholder" class="py-4 flex flex-col items-center gap-2 text-gray-400">
+            <i data-lucide="upload-cloud" class="w-8 h-8 text-gray-500"></i>
+            <span class="text-xs">ပုံတင်ရန် နှိပ်ပါ (သို့မဟုတ်) Drag & Drop ထည့်ပါ</span>
+          </div>
+          <img id="image-preview" src="" alt="Preview" class="hidden max-h-40 mx-auto rounded-lg object-contain" />
+        </div>
+      </div>
+
       <!-- Prompt Input -->
       <div class="flex flex-col gap-1.5">
         <label class="text-xs font-semibold text-gray-400 uppercase">Prompt (ဖော်ပြချက်ကို အင်္ဂလိပ်လို ရေးလျှင် AI က ပိုနားလည်ပါသည်)</label>
-        <textarea id="prompt-input" rows="3" placeholder="e.g. A cinematic shot of a golden retriever puppy running in a flower field, sunlight, 4k" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
+        <textarea id="prompt-input" rows="3" placeholder="e.g. A cinematic shot of a golden retriever puppy running in a flower field, sunny day, 4k" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
       </div>
 
-      <!-- AI Video Model Selection -->
+      <!-- Character Consistency -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-semibold text-gray-400 uppercase flex items-center gap-1">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-400"></i> Character ID / Consistency Ref
+        </label>
+        <input type="text" id="character-input" placeholder="e.g. #character_id, red traditional warrior costume, face locked" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
+      </div>
+
+      <!-- Model Selection -->
       <div class="flex flex-col gap-1.5">
         <label class="text-xs font-semibold text-gray-400 uppercase">AI Video Model</label>
         <select id="model-select" class="bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-xs text-gray-200 focus:border-indigo-500">
@@ -62,7 +85,7 @@
       </div>
 
       <!-- Settings Dropdowns -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         <div class="flex flex-col gap-1">
           <label class="text-xs text-gray-400">Duration</label>
           <select id="duration-select" class="bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs">
@@ -75,26 +98,37 @@
           <select id="ratio-select" class="bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs">
             <option value="16:9">16:9 (Landscape)</option>
             <option value="9:16">9:16 (Vertical)</option>
+            <option value="1:1">1:1 (Square)</option>
           </select>
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-xs text-gray-400">AI Voice</label>
           <select id="voice-select" class="bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs">
             <option value="my">မြန်မာ (Burmese)</option>
+            <option value="th">ภาษาไทย (Thai)</option>
             <option value="en">English (US)</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-gray-400">BGM Music</label>
+          <select id="music-select" class="bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs">
+            <option value="cinematic">Cinematic</option>
+            <option value="horror">Suspense/Horror</option>
+            <option value="epic">Epic Action</option>
+            <option value="none">None</option>
           </select>
         </div>
       </div>
 
       <!-- Generate Button -->
       <button id="generate-btn" onclick="startGeneration()" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 font-semibold rounded-xl text-white transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30">
-        <i data-lucide="play" class="w-4 h-4 fill-white"></i> Generate Real AI Video
+        <i data-lucide="play" class="w-4 h-4 fill-white"></i> Generate AI Video
       </button>
 
     </div>
 
     <!-- Video Output (Right 5 Cols) -->
-    <div class="md:col-span-5 bg-gray-900/80 border border-gray-800 p-5 rounded-2xl min-h-[460px] flex flex-col justify-between">
+    <div class="md:col-span-5 bg-gray-900/80 border border-gray-800 p-5 rounded-2xl min-h-[460px] flex flex-col justify-between shadow-xl">
       <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Video Output</h2>
 
       <!-- Empty State -->
@@ -106,7 +140,7 @@
       <!-- Loading State -->
       <div id="loading-state" class="hidden flex-1 flex flex-col items-center justify-center p-6 gap-3">
         <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500"></div>
-        <p id="status-label" class="text-xs text-indigo-300 text-center mt-2">AI server သို့ ပို့ဆောင်နေပါသည်...</p>
+        <p id="status-label" class="text-xs text-indigo-300 text-center mt-2">AI server သို့ ဆက်သွယ်နေပါသည်...</p>
       </div>
 
       <!-- Result Video State -->
@@ -118,7 +152,7 @@
       </div>
 
       <div class="text-[11px] text-gray-500 text-center border-t border-gray-800/60 pt-3">
-        Replicate API Integration Active
+        Backend API & Client Integration Ready
       </div>
     </div>
 
@@ -126,20 +160,47 @@
 
   <script>
     lucide.createIcons();
+    let currentMode = 'text';
 
-    // Auto-load token from localStorage
+    // Auto-save Token
     const savedToken = localStorage.getItem('replicate_token');
     if (savedToken) document.getElementById('api-key').value = savedToken;
-
     document.getElementById('api-key').addEventListener('input', (e) => {
       localStorage.setItem('replicate_token', e.target.value.trim());
     });
 
-    function switchMode(m) {}
+    function switchMode(mode) {
+      currentMode = mode;
+      const tabText = document.getElementById('tab-text');
+      const tabImg = document.getElementById('tab-image');
+      const imgBox = document.getElementById('image-upload-box');
+
+      if (mode === 'text') {
+        tabText.className = "flex-1 py-2 rounded-lg bg-indigo-600 text-white transition flex items-center justify-center gap-2";
+        tabImg.className = "flex-1 py-2 rounded-lg text-gray-400 hover:text-white transition flex items-center justify-center gap-2";
+        imgBox.classList.add('hidden');
+      } else {
+        tabImg.className = "flex-1 py-2 rounded-lg bg-indigo-600 text-white transition flex items-center justify-center gap-2";
+        tabText.className = "flex-1 py-2 rounded-lg text-gray-400 hover:text-white transition flex items-center justify-center gap-2";
+        imgBox.classList.remove('hidden');
+      }
+    }
+
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const preview = document.getElementById('image-preview');
+        const placeholder = document.getElementById('upload-placeholder');
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+      }
+    }
 
     async function startGeneration() {
       const token = document.getElementById('api-key').value.trim();
-      const prompt = document.getElementById('prompt-input').value.trim();
+      let prompt = document.getElementById('prompt-input').value.trim();
+      const charRef = document.getElementById('character-input').value.trim();
       const model = document.getElementById('model-select').value;
 
       if (!token) {
@@ -149,6 +210,10 @@
       if (!prompt) {
         alert("ကျေးဇူးပြု၍ Prompt ရေးပေးပါ!");
         return;
+      }
+
+      if (charRef) {
+        prompt = `${prompt}, Consistent Character: (${charRef})`;
       }
 
       const emptyState = document.getElementById('empty-state');
@@ -164,25 +229,14 @@
       loadingState.classList.remove('hidden');
       generateBtn.disabled = true;
 
-      // CORS Proxy ကို အသုံးပြုခြင်း
-      const proxy = "https://corsproxy.io/?";
-
       try {
-        statusLabel.innerText = "Replicate AI သို့ ချိတ်ဆက်နေပါသည်...";
+        statusLabel.innerText = "AI Server သို့ ချိတ်ဆက်နေပါသည်...";
 
-        const targetUrl = `https://api.replicate.com/v1/models/${model}/predictions`;
-        const response = await fetch(proxy + encodeURIComponent(targetUrl), {
+        // Vercel Serverless Backend API သို့ POST ပို့ခြင်း (CORS ကင်းလွတ်သည်)
+        const response = await fetch("/api/generate", {
           method: "POST",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            input: {
-              prompt: prompt,
-              prompt_optimizer: true
-            }
-          })
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt, token, model })
         });
 
         const data = await response.json();
@@ -196,7 +250,7 @@
           statusLabel.innerText = `AI Video ဖန်တီးနေပါသည်... (${prediction.status})`;
           await new Promise(r => setTimeout(r, 4000));
           
-          const pollRes = await fetch(proxy + encodeURIComponent(`https://api.replicate.com/v1/predictions/${prediction.id}`), {
+          const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
             headers: { "Authorization": `Bearer ${token}` }
           });
           prediction = await pollRes.json();
@@ -209,7 +263,7 @@
           loadingState.classList.add('hidden');
           resultState.classList.remove('hidden');
         } else {
-          throw new Error("Generation မအောင်မြင်ပါ- " + (prediction.error || "ကျေးဇူးပြု၍ ပြန်စမ်းကြည့်ပါ"));
+          throw new Error("Generation မအောင်မြင်ပါ- " + (prediction.error || "ကျေးဇူးပြု၍ ပြန်စမ်းပါ"));
         }
 
       } catch (err) {
