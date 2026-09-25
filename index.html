@@ -249,13 +249,11 @@
         while (prediction.status !== "succeeded" && prediction.status !== "failed" && prediction.status !== "canceled") {
           statusLabel.innerText = `AI Video ဖန်တီးနေပါသည်... (${prediction.status})`;
           await new Promise(r => setTimeout(r, 4000));
+             
+       const pollRes = await fetch(`/api/status?id=${prediction.id}&token=${token}`);
           
-          const pollRes = await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
-            headers: { "Authorization": `Bearer ${token}` }
-          });
           prediction = await pollRes.json();
         }
-
         if (prediction.status === "succeeded") {
           const videoUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
           outputVideo.src = videoUrl;
