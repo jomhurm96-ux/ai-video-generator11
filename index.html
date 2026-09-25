@@ -21,7 +21,7 @@
         AI Video Studio
       </h1>
       <p class="text-xs md:text-sm text-gray-400 mt-0.5">
-        Text/Image to Video, Multi-language AI Voice & Character Consistency
+        AI Video + Multi-language Voiceover + BGM Music Player
       </p>
     </div>
     
@@ -48,23 +48,20 @@
         </button>
       </div>
 
-      <!-- Image Upload Area (Hidden by default) -->
-      <div id="image-upload-box" class="hidden flex-col gap-2">
-        <label class="text-xs font-semibold text-gray-400 uppercase">Source Image</label>
-        <div class="border-2 border-dashed border-gray-700 hover:border-indigo-500 rounded-xl p-4 text-center cursor-pointer relative bg-gray-950/50 transition">
-          <input type="file" id="image-input" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewImage(event)" />
-          <div id="upload-placeholder" class="py-4 flex flex-col items-center gap-2 text-gray-400">
-            <i data-lucide="upload-cloud" class="w-8 h-8 text-gray-500"></i>
-            <span class="text-xs">ပုံတင်ရန် နှိပ်ပါ (သို့မဟုတ်) Drag & Drop ထည့်ပါ</span>
-          </div>
-          <img id="image-preview" src="" alt="Preview" class="hidden max-h-40 mx-auto rounded-lg object-contain" />
-        </div>
+      <!-- Prompt Input (Video Action) -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-semibold text-gray-400 uppercase">
+          Video Visual Prompt (AI လှုပ်ရှားမှုအတွက် အင်္ဂလိပ်လို ရေးပါ)
+        </label>
+        <textarea id="prompt-input" rows="2" placeholder="e.g. Cinematic motion, a cute red apple smiling and dancing happily on a table, 3d render" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
       </div>
 
-      <!-- Prompt Input -->
+      <!-- Voiceover / Narration Input -->
       <div class="flex flex-col gap-1.5">
-        <label class="text-xs font-semibold text-gray-400 uppercase">Prompt (ဖော်ပြချက်ကို အင်္ဂလိပ်လို ရေးလျှင် AI က ပိုနားလည်ပါသည်)</label>
-        <textarea id="prompt-input" rows="3" placeholder="e.g. A cinematic shot of a golden retriever puppy running in a flower field, sunny day, 4k" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
+        <label class="text-xs font-semibold text-gray-400 uppercase flex items-center gap-1">
+          <i data-lucide="mic" class="w-3.5 h-3.5 text-indigo-400"></i> Voiceover Script (အသံထွက်ဖတ်မည့် စာသား)
+        </label>
+        <textarea id="voice-script" rows="2" placeholder="ဥပမာ- ရှေးရှေးတုန်းက သစ်သီးဆိုင်လေးထဲမှာ ပျော်ရွှင်စရာ ပန်းသီးလေးတစ်လုံး ရှိပါသတဲ့..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
       </div>
 
       <!-- Character Consistency -->
@@ -72,7 +69,7 @@
         <label class="text-xs font-semibold text-gray-400 uppercase flex items-center gap-1">
           <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-400"></i> Character ID / Consistency Ref
         </label>
-        <input type="text" id="character-input" placeholder="e.g. #character_id, red traditional warrior costume, face locked" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
+        <input type="text" id="character-input" placeholder="e.g. #apple_character, big cartoon eyes, red glossy texture" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
       </div>
 
       <!-- Model Selection -->
@@ -98,15 +95,14 @@
           <select id="ratio-select" class="bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs">
             <option value="16:9">16:9 (Landscape)</option>
             <option value="9:16">9:16 (Vertical)</option>
-            <option value="1:1">1:1 (Square)</option>
           </select>
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-xs text-gray-400">AI Voice</label>
           <select id="voice-select" class="bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs">
-            <option value="my">မြန်မာ (Burmese)</option>
-            <option value="th">ภาษาไทย (Thai)</option>
-            <option value="en">English (US)</option>
+            <option value="my-MM">မြန်မာ (Burmese)</option>
+            <option value="th-TH">ภาษาไทย (Thai)</option>
+            <option value="en-US">English (US)</option>
           </select>
         </div>
         <div class="flex flex-col gap-1">
@@ -115,21 +111,26 @@
             <option value="cinematic">Cinematic</option>
             <option value="horror">Suspense/Horror</option>
             <option value="epic">Epic Action</option>
-            <option value="none">None</option>
+            <option value="none">No Music</option>
           </select>
         </div>
       </div>
 
       <!-- Generate Button -->
       <button id="generate-btn" onclick="startGeneration()" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 font-semibold rounded-xl text-white transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30">
-        <i data-lucide="play" class="w-4 h-4 fill-white"></i> Generate AI Video
+        <i data-lucide="play" class="w-4 h-4 fill-white"></i> Generate AI Video with Audio
       </button>
 
     </div>
 
     <!-- Video Output (Right 5 Cols) -->
     <div class="md:col-span-5 bg-gray-900/80 border border-gray-800 p-5 rounded-2xl min-h-[460px] flex flex-col justify-between shadow-xl">
-      <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Video Output</h2>
+      <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center justify-between">
+        <span>Video Output</span>
+        <span id="audio-indicator" class="hidden text-[10px] text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded-md flex items-center gap-1">
+          <i data-lucide="volume-2" class="w-3 h-3"></i> Audio Synced
+        </span>
+      </h2>
 
       <!-- Empty State -->
       <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center p-6 text-gray-600 gap-2">
@@ -145,14 +146,18 @@
 
       <!-- Result Video State -->
       <div id="result-state" class="hidden flex-1 flex flex-col gap-3 my-auto">
-        <video id="output-video" controls class="w-full rounded-xl border border-gray-800 bg-black"></video>
+        <video id="output-video" controls loop class="w-full rounded-xl border border-gray-800 bg-black"></video>
+        
+        <!-- Background Audio (Hidden) -->
+        <audio id="bgm-player" loop></audio>
+
         <a id="download-btn" href="#" target="_blank" download="ai_video.mp4" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition">
           <i data-lucide="download" class="w-4 h-4"></i> Download Video
         </a>
       </div>
 
       <div class="text-[11px] text-gray-500 text-center border-t border-gray-800/60 pt-3">
-        Backend API & Client Integration Ready
+        Audio Engine Active (Speech Synthesis + BGM Sync)
       </div>
     </div>
 
@@ -162,6 +167,14 @@
     lucide.createIcons();
     let currentMode = 'text';
 
+    // BGM Tracks (Royalty Free)
+    const BGM_TRACKS = {
+      cinematic: "https://actions.google.com/sounds/v1/weather/rain_heavy.ogg",
+      horror: "https://actions.google.com/sounds/v1/horror/ambient_hum.ogg",
+      epic: "https://actions.google.com/sounds/v1/sports/crowd_cheer.ogg",
+      none: ""
+    };
+
     // Auto-save Token
     const savedToken = localStorage.getItem('replicate_token');
     if (savedToken) document.getElementById('api-key').value = savedToken;
@@ -169,51 +182,64 @@
       localStorage.setItem('replicate_token', e.target.value.trim());
     });
 
-    function switchMode(mode) {
-      currentMode = mode;
-      const tabText = document.getElementById('tab-text');
-      const tabImg = document.getElementById('tab-image');
-      const imgBox = document.getElementById('image-upload-box');
+    function switchMode(m) {}
 
-      if (mode === 'text') {
-        tabText.className = "flex-1 py-2 rounded-lg bg-indigo-600 text-white transition flex items-center justify-center gap-2";
-        tabImg.className = "flex-1 py-2 rounded-lg text-gray-400 hover:text-white transition flex items-center justify-center gap-2";
-        imgBox.classList.add('hidden');
+    // Audio Playback Synchronization
+    function setupAudioPlayback(scriptText, lang, bgmType) {
+      const video = document.getElementById('output-video');
+      const bgm = document.getElementById('bgm-player');
+      const indicator = document.getElementById('audio-indicator');
+      indicator.classList.remove('hidden');
+
+      if (BGM_TRACKS[bgmType]) {
+        bgm.src = BGM_TRACKS[bgmType];
+        bgm.volume = 0.25; // Soft BGM
       } else {
-        tabImg.className = "flex-1 py-2 rounded-lg bg-indigo-600 text-white transition flex items-center justify-center gap-2";
-        tabText.className = "flex-1 py-2 rounded-lg text-gray-400 hover:text-white transition flex items-center justify-center gap-2";
-        imgBox.classList.remove('hidden');
+        bgm.removeAttribute('src');
       }
-    }
 
-    function previewImage(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const preview = document.getElementById('image-preview');
-        const placeholder = document.getElementById('upload-placeholder');
-        preview.src = URL.createObjectURL(file);
-        preview.classList.remove('hidden');
-        placeholder.classList.add('hidden');
-      }
+      const speak = () => {
+        if (!scriptText || !('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel(); // Reset previous
+        const utterance = new SpeechSynthesisUtterance(scriptText);
+        utterance.lang = lang;
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      };
+
+      video.onplay = () => {
+        if (bgm.src) bgm.play();
+        speak();
+      };
+
+      video.onpause = () => {
+        if (bgm.src) bgm.pause();
+        if ('speechSynthesis' in window) window.speechSynthesis.pause();
+      };
     }
 
     async function startGeneration() {
       const token = document.getElementById('api-key').value.trim();
       let prompt = document.getElementById('prompt-input').value.trim();
+      const voiceScript = document.getElementById('voice-script').value.trim();
       const charRef = document.getElementById('character-input').value.trim();
       const model = document.getElementById('model-select').value;
+      const lang = document.getElementById('voice-select').value;
+      const bgmType = document.getElementById('music-select').value;
 
       if (!token) {
-        alert("ကျေးဇူးပြု၍ ညာဘက်အပေါ်က အကွက်မှာ Replicate API Token ထည့်ပေးပါ!");
+        alert("ကျေးဇူးပြု၍ Replicate API Token ထည့်ပေးပါ!");
         return;
       }
       if (!prompt) {
-        alert("ကျေးဇူးပြု၍ Prompt ရေးပေးပါ!");
+        alert("ကျေးဇူးပြု၍ Video Prompt ရေးပေးပါ!");
         return;
       }
 
+      // လှုပ်ရှားမှု မသေစေရန် Motion Keywords များ အလိုအလျောက် ပေါင်းထည့်ပေးခြင်း
+      let enhancedPrompt = `cinematic video, fluid movement, dynamic motion, ${prompt}`;
       if (charRef) {
-        prompt = `${prompt}, Consistent Character: (${charRef})`;
+        enhancedPrompt += `, Consistent Character: (${charRef})`;
       }
 
       const emptyState = document.getElementById('empty-state');
@@ -232,11 +258,10 @@
       try {
         statusLabel.innerText = "AI Server သို့ ချိတ်ဆက်နေပါသည်...";
 
-        // Vercel Serverless Backend API သို့ POST ပို့ခြင်း (CORS ကင်းလွတ်သည်)
         const response = await fetch("/api/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt, token, model })
+          body: JSON.stringify({ prompt: enhancedPrompt, token, model })
         });
 
         const data = await response.json();
@@ -249,15 +274,19 @@
         while (prediction.status !== "succeeded" && prediction.status !== "failed" && prediction.status !== "canceled") {
           statusLabel.innerText = `AI Video ဖန်တီးနေပါသည်... (${prediction.status})`;
           await new Promise(r => setTimeout(r, 4000));
-             
-       const pollRes = await fetch(`/api/status?id=${prediction.id}&token=${token}`);
           
+          const pollRes = await fetch(`/api/status?id=${prediction.id}&token=${token}`);
           prediction = await pollRes.json();
         }
+
         if (prediction.status === "succeeded") {
           const videoUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
           outputVideo.src = videoUrl;
           downloadBtn.href = videoUrl;
+
+          // ဗီဒီယိုနှင့် Voice/BGM ချိတ်ဆက်ခြင်း
+          setupAudioPlayback(voiceScript || prompt, lang, bgmType);
+
           loadingState.classList.add('hidden');
           resultState.classList.remove('hidden');
         } else {
