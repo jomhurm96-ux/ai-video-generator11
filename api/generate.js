@@ -1,12 +1,12 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { prompt, token, model } = req.body;
 
-  if (!token || !prompt) {
-    return res.status(400).json({ error: 'Token and Prompt are required' });
+  if (!token) {
+    return res.status(400).json({ error: "Replicate token is required" });
   }
 
   try {
@@ -18,10 +18,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        input: {
-          prompt: prompt,
-          prompt_optimizer: true
-        }
+        input: { prompt: prompt }
       })
     });
 
