@@ -3,111 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Video Generator Studio</title>
+  <title>AI Video Generator Studio Pro</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    body { background-color: #0b0f19; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    body { 
+      background: radial-gradient(circle at 50% 0%, #17192b 0%, #090a10 100%);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      color: #f3f4f6; 
+    }
+    .glass-panel {
+      background: rgba(18, 21, 37, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
   </style>
 </head>
-<body class="min-h-screen p-4 md:p-8 max-w-5xl mx-auto flex flex-col gap-6">
+<body class="min-h-screen p-4 md:p-8 max-w-6xl mx-auto flex flex-col gap-6">
 
-  <!-- Header -->
-  <header class="border-b border-gray-800 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-    <div>
-      <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
-        AI Video Studio
-      </h1>
-      <p class="text-xs md:text-sm text-gray-400 mt-0.5">
-        AI Video + Real Burmese AI Voice + BGM Music Player
-      </p>
+  <!-- Top Navigation Header -->
+  <header class="glass-panel px-6 py-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xl">
+    <div class="flex items-center gap-3">
+      <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+        <i data-lucide="video" class="w-5 h-5 text-white"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-xl font-bold tracking-tight text-white">AI Video Studio Pro</h1>
+          <span class="text-[10px] bg-indigo-500/20 text-indigo-300 font-semibold px-2 py-0.5 rounded-full border border-indigo-500/30">v2.0 Turbo</span>
+        </div>
+        <p class="text-xs text-gray-400 mt-0.5">Burmese AI Voice & Dynamic Visual Engine</p>
+      </div>
     </div>
     
-    <!-- API Token Input -->
-    <div class="flex items-center gap-2 bg-gray-900 border border-gray-800 px-3 py-1.5 rounded-xl shadow-inner">
+    <!-- Token Input Box -->
+    <div class="flex items-center gap-2 bg-black/40 border border-gray-700/60 px-3.5 py-2 rounded-xl focus-within:border-indigo-500 transition">
       <i data-lucide="key" class="w-4 h-4 text-amber-400"></i>
-      <input type="password" id="api-key" placeholder="Replicate Token (r8_...)" class="bg-transparent text-xs text-white focus:outline-none w-48 md:w-56 placeholder-gray-500" />
+      <input type="password" id="api-key" placeholder="Replicate API Token (r8_...)" class="bg-transparent text-xs text-white focus:outline-none w-52 md:w-60 placeholder-gray-500" />
     </div>
   </header>
 
-  <!-- Main Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+  <!-- Main Grid Workspace -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
     
     <!-- Controls (Left 7 Cols) -->
-    <div class="md:col-span-7 bg-gray-900/80 border border-gray-800 p-5 rounded-2xl flex flex-col gap-4 shadow-xl">
+    <div class="lg:col-span-7 glass-panel p-6 rounded-3xl flex flex-col gap-5 shadow-2xl">
       
-      <!-- Mode Selection Tabs -->
-      <div class="flex bg-gray-950 p-1 rounded-xl border border-gray-800 text-sm font-medium">
-        <button id="tab-text" onclick="switchMode('text')" class="flex-1 py-2 rounded-lg bg-indigo-600 text-white transition flex items-center justify-center gap-2">
-          <i data-lucide="sparkles" class="w-4 h-4"></i> Text → Video
-        </button>
-        <button id="tab-image" onclick="switchMode('image')" class="flex-1 py-2 rounded-lg text-gray-400 hover:text-white transition flex items-center justify-center gap-2">
-          <i data-lucide="image" class="w-4 h-4"></i> Image → Video
-        </button>
+      <!-- Video Visual Prompt -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-400"></i> Video Visual Prompt (အင်္ဂလိပ်လို ရေးပါ)
+        </label>
+        <textarea id="prompt-input" rows="2" placeholder="e.g. A cute 3D cartoon orange character dancing and waving happily, cinematic lighting, ultra smooth 4k" class="w-full bg-black/40 border border-gray-800 rounded-xl p-3.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"></textarea>
       </div>
 
-      <!-- Video Action Prompt Input -->
-      <div class="flex flex-col gap-1.5">
-        <label class="text-xs font-semibold text-gray-400 uppercase">
-          Video Visual Prompt (AI လှုပ်ရှားမှုအတွက် အင်္ဂလိပ်လို ရေးပါ)
+      <!-- Voiceover Burmese Text -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="mic" class="w-3.5 h-3.5 text-pink-400"></i> Voiceover Script (အသံထွက်ဖတ်မည့် မြန်မာစာသား)
         </label>
-        <textarea id="prompt-input" rows="2" placeholder="e.g. A cute 3D cartoon red apple walking and dancing happily along a sunny garden path, waving hand, cinematic lighting, 4k" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
+        <textarea id="voice-script" rows="2" placeholder="ဥပမာ- မင်္ဂလာပါခင်ဗျာ... ဒီနေ့ ရာသီဥတုလေးက အရမ်းသာယာလှပနေပါတယ်။" class="w-full bg-black/40 border border-gray-800 rounded-xl p-3.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-pink-500 transition"></textarea>
       </div>
 
-      <!-- Voiceover Script Input -->
-      <div class="flex flex-col gap-1.5">
-        <label class="text-xs font-semibold text-gray-400 uppercase flex items-center gap-1">
-          <i data-lucide="mic" class="w-3.5 h-3.5 text-indigo-400"></i> Voiceover Script (အသံထွက်ဖတ်မည့် စာသား)
-        </label>
-        <textarea id="voice-script" rows="2" placeholder="ဥပမာ- မင်္ဂလာပါ... ပျော်ရွှင်စရာ သဘာဝ ဥယျာဉ်လေးထဲကို ကြိုဆိုပါတယ်။" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
-      </div>
+      <!-- Camera Movement Selection (Added for Motion Quality) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-semibold text-gray-400 uppercase">Camera Movement</label>
+          <select id="camera-motion" class="bg-black/40 border border-gray-800 rounded-xl p-2.5 text-xs text-gray-200 focus:border-indigo-500">
+            <option value="cinematic smooth tracking shot">Tracking Shot (ကင်မရာ အနောက်လိုက်)</option>
+            <option value="slow zoom in cinematic shot">Slow Zoom In (အနီးကပ် ချဉ်းကပ်)</option>
+            <option value="drone panoramic shot">Drone View (ဝေဟင် ရှုခင်း)</option>
+            <option value="dynamic action shot">Action Motion (လှုပ်ရှားမှု မြန်ဆန်)</option>
+          </select>
+        </div>
 
-      <!-- Character Consistency -->
-      <div class="flex flex-col gap-1.5">
-        <label class="text-xs font-semibold text-gray-400 uppercase flex items-center gap-1">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-400"></i> Character ID / Consistency Ref
-        </label>
-        <input type="text" id="character-input" placeholder="e.g. #apple_character, big cartoon eyes, glossy red texture" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-semibold text-gray-400 uppercase">Character Consistency</label>
+          <input type="text" id="character-input" placeholder="e.g. #character_id, vibrant orange, cartoon eyes" class="bg-black/40 border border-gray-800 rounded-xl p-2.5 text-xs text-gray-200 focus:border-indigo-500" />
+        </div>
       </div>
 
       <!-- Model Selection -->
       <div class="flex flex-col gap-1.5">
         <label class="text-xs font-semibold text-gray-400 uppercase">AI Video Model</label>
-        <select id="model-select" class="bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-xs text-gray-200 focus:border-indigo-500">
-          <option value="minimax/video-01">MiniMax Video-01 (Text-to-Video)</option>
-          <option value="lucataco/animate-diff">AnimateDiff (Fast Video)</option>
+        <select id="model-select" class="bg-black/40 border border-gray-800 rounded-xl p-2.5 text-xs text-gray-200 focus:border-indigo-500">
+          <option value="minimax/video-01">MiniMax Video-01 (High-Quality Text-to-Video)</option>
+          <option value="lucataco/animate-diff">AnimateDiff (Ultra Fast)</option>
         </select>
       </div>
 
-      <!-- Settings Dropdowns -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+      <!-- Setting Selectors -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
         <div class="flex flex-col gap-1">
-          <label class="text-xs text-gray-400">Duration</label>
-          <select id="duration-select" class="bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs">
+          <label class="text-[11px] text-gray-400">Duration</label>
+          <select id="duration-select" class="bg-black/40 border border-gray-800 rounded-lg p-2 text-xs">
             <option value="5s">5 Seconds</option>
             <option value="10s">10 Seconds</option>
           </select>
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs text-gray-400">Aspect Ratio</label>
-          <select id="ratio-select" class="bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs">
+          <label class="text-[11px] text-gray-400">Ratio</label>
+          <select id="ratio-select" class="bg-black/40 border border-gray-800 rounded-lg p-2 text-xs">
             <option value="16:9">16:9 (Landscape)</option>
-            <option value="9:16">9:16 (Vertical)</option>
+            <option value="9:16">9:16 (Shorts/TikTok)</option>
           </select>
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs text-gray-400">AI Voice</label>
-          <select id="voice-select" class="bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs">
-            <option value="my-MM">မြန်မာ (Burmese)</option>
-            <option value="th-TH">ภาษาไทย (Thai)</option>
-            <option value="en-US">English (US)</option>
+          <label class="text-[11px] text-gray-400">AI Voice</label>
+          <select id="voice-select" class="bg-black/40 border border-gray-800 rounded-lg p-2 text-xs">
+            <option value="my">မြန်မာ (Burmese)</option>
+            <option value="th">ภาษาไทย (Thai)</option>
+            <option value="en">English (US)</option>
           </select>
         </div>
         <div class="flex flex-col gap-1">
-          <label class="text-xs text-gray-400">BGM Music</label>
-          <select id="music-select" class="bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs">
+          <label class="text-[11px] text-gray-400">BGM Music</label>
+          <select id="music-select" class="bg-black/40 border border-gray-800 rounded-lg p-2 text-xs">
             <option value="cinematic">Cinematic</option>
             <option value="horror">Suspense/Horror</option>
             <option value="epic">Epic Action</option>
@@ -117,47 +132,58 @@
       </div>
 
       <!-- Generate Button -->
-      <button id="generate-btn" onclick="startGeneration()" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 font-semibold rounded-xl text-white transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/30">
-        <i data-lucide="play" class="w-4 h-4 fill-white"></i> Generate AI Video with Audio
+      <button id="generate-btn" onclick="startGeneration()" class="w-full mt-2 py-3.5 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 hover:from-indigo-600 hover:to-pink-600 font-semibold rounded-2xl text-white transition flex items-center justify-center gap-2 shadow-xl shadow-purple-600/30">
+        <i data-lucide="sparkles" class="w-4 h-4 fill-white"></i> Generate AI Video Studio Pro
       </button>
 
     </div>
 
-    <!-- Video Output (Right 5 Cols) -->
-    <div class="md:col-span-5 bg-gray-900/80 border border-gray-800 p-5 rounded-2xl min-h-[460px] flex flex-col justify-between shadow-xl">
-      <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center justify-between">
-        <span>Video Output</span>
-        <span id="audio-indicator" class="hidden text-[10px] text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded-md flex items-center gap-1">
-          <i data-lucide="volume-2" class="w-3 h-3"></i> Audio Synced
+    <!-- Output Box (Right 5 Cols) -->
+    <div class="lg:col-span-5 glass-panel p-6 rounded-3xl min-h-[490px] flex flex-col justify-between shadow-2xl">
+      <div class="flex items-center justify-between border-b border-gray-800/80 pb-3">
+        <h2 class="text-xs font-semibold text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="play-circle" class="w-4 h-4 text-indigo-400"></i> Video Studio Output
+        </h2>
+        <span id="audio-indicator" class="hidden text-[10px] text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded-full flex items-center gap-1">
+          <i data-lucide="volume-2" class="w-3 h-3"></i> Voice & BGM Ready
         </span>
-      </h2>
+      </div>
 
       <!-- Empty State -->
-      <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center p-6 text-gray-600 gap-2">
-        <i data-lucide="video" class="w-12 h-12 stroke-[1.5]"></i>
-        <p class="text-sm">API Token နှင့် Prompt ထည့်ပြီး Generate ကို နှိပ်ပါ</p>
+      <div id="empty-state" class="flex-1 flex flex-col items-center justify-center text-center p-6 text-gray-500 gap-3">
+        <div class="h-16 w-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+          <i data-lucide="clapperboard" class="w-8 h-8 stroke-[1.2] text-gray-400"></i>
+        </div>
+        <p class="text-xs max-w-xs text-gray-400">Prompt နှင့် Token ဖြည့်သွင်းပြီး ဗီဒီယို ဖန်တီးပါ</p>
       </div>
 
       <!-- Loading State -->
-      <div id="loading-state" class="hidden flex-1 flex flex-col items-center justify-center p-6 gap-3">
-        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500"></div>
-        <p id="status-label" class="text-xs text-indigo-300 text-center mt-2">AI server သို့ ဆက်သွယ်နေပါသည်...</p>
+      <div id="loading-state" class="hidden flex-1 flex flex-col items-center justify-center p-6 gap-4">
+        <div class="relative flex items-center justify-center">
+          <div class="w-14 h-14 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+          <i data-lucide="film" class="w-5 h-5 text-indigo-400 absolute"></i>
+        </div>
+        <div class="text-center">
+          <p id="status-label" class="text-xs font-medium text-indigo-300">AI Server သို့ ချိတ်ဆက်နေပါသည်...</p>
+          <span class="text-[10px] text-gray-500 mt-1 block">ကြာချိန် ၂ မှ ၄ မိနစ်ခန့် ယူပါမည်</span>
+        </div>
       </div>
 
-      <!-- Result Video State -->
-      <div id="result-state" class="hidden flex-1 flex flex-col gap-3 my-auto">
-        <video id="output-video" controls loop class="w-full rounded-xl border border-gray-800 bg-black"></video>
+      <!-- Result State -->
+      <div id="result-state" class="hidden flex-1 flex flex-col gap-4 my-auto pt-2">
+        <div class="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-black">
+          <video id="output-video" controls loop class="w-full"></video>
+        </div>
         
-        <!-- Background Audio (Hidden) -->
         <audio id="bgm-player" loop></audio>
 
-        <a id="download-btn" href="#" target="_blank" download="ai_video.mp4" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition">
-          <i data-lucide="download" class="w-4 h-4"></i> Download Video
+        <a id="download-btn" href="#" target="_blank" download="ai_video_pro.mp4" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-teal-500/20 transition">
+          <i data-lucide="download" class="w-4 h-4"></i> Download Final Video
         </a>
       </div>
 
-      <div class="text-[11px] text-gray-500 text-center border-t border-gray-800/60 pt-3">
-        Audio Engine Active (Burmese AI TTS + BGM Sync)
+      <div class="text-[10px] text-gray-500 text-center border-t border-gray-800/80 pt-3">
+        Engine: MiniMax Video-01 + Burmese Multi-Voice TTS Sync
       </div>
     </div>
 
@@ -165,9 +191,8 @@
 
   <script>
     lucide.createIcons();
-    let currentMode = 'text';
 
-    // Royalty Free BGM Tracks
+    // BGM Tracks (Royalty Free)
     const BGM_TRACKS = {
       cinematic: "https://actions.google.com/sounds/v1/weather/rain_heavy.ogg",
       horror: "https://actions.google.com/sounds/v1/horror/ambient_hum.ogg",
@@ -175,23 +200,20 @@
       none: ""
     };
 
-    // Auto-save & Load Token
+    // Auto-save Token
     const savedToken = localStorage.getItem('replicate_token');
     if (savedToken) document.getElementById('api-key').value = savedToken;
     document.getElementById('api-key').addEventListener('input', (e) => {
       localStorage.setItem('replicate_token', e.target.value.trim());
     });
 
-    function switchMode(m) {}
-
-    // Burmese AI Voice & BGM Synchronization
+    // Burmese Voice & BGM Synchronization
     function setupAudioPlayback(scriptText, langCode, bgmType) {
       const video = document.getElementById('output-video');
       const bgm = document.getElementById('bgm-player');
       const indicator = document.getElementById('audio-indicator');
       indicator.classList.remove('hidden');
 
-      // Setup Background Music
       if (BGM_TRACKS[bgmType]) {
         bgm.src = BGM_TRACKS[bgmType];
         bgm.volume = 0.2;
@@ -199,11 +221,9 @@
         bgm.removeAttribute('src');
       }
 
-      // Setup Burmese / Multi-language AI Voice
       let voiceAudio = null;
       if (scriptText) {
-        const cleanLang = langCode.split('-')[0];
-        voiceAudio = new Audio(`/api/tts?text=${encodeURIComponent(scriptText)}&lang=${cleanLang}`);
+        voiceAudio = new Audio(`/api/tts?text=${encodeURIComponent(scriptText)}&lang=${langCode}`);
         voiceAudio.volume = 1.0;
       }
 
@@ -230,6 +250,7 @@
       const token = document.getElementById('api-key').value.trim();
       let prompt = document.getElementById('prompt-input').value.trim();
       const voiceScript = document.getElementById('voice-script').value.trim();
+      const cameraMotion = document.getElementById('camera-motion').value;
       const charRef = document.getElementById('character-input').value.trim();
       const model = document.getElementById('model-select').value;
       const lang = document.getElementById('voice-select').value;
@@ -240,14 +261,14 @@
         return;
       }
       if (!prompt) {
-        alert("ကျေးဇူးပြု၍ Video Prompt ရေးပေးပါ!");
+        alert("ကျေးဇူးပြု၍ Video Visual Prompt ရေးပေးပါ!");
         return;
       }
 
-      // Dynamic motion keywords ပေါင်းထည့်ပေးခြင်း
-      let enhancedPrompt = `cinematic video, fluid movement, dynamic motion, ${prompt}`;
+      // လှုပ်ရှားမှု သဘာဝကျစေရန် Camera Movement Tag ပေါင်းထည့်ပေးခြင်း
+      let enhancedPrompt = `${cameraMotion}, dynamic movement, highly detailed, ${prompt}`;
       if (charRef) {
-        enhancedPrompt += `, Consistent Character: (${charRef})`;
+        enhancedPrompt += `, Consistent Subject: (${charRef})`;
       }
 
       const emptyState = document.getElementById('empty-state');
@@ -272,13 +293,14 @@
           body: JSON.stringify({ prompt: enhancedPrompt, token, model })
         });
 
-        const data = await response.json();
-
-        if (data.error || data.detail) {
-          throw new Error(data.error || data.detail);
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.error || errData.detail || "Serverless Function အလုပ်မလုပ်ပါ");
         }
 
+        const data = await response.json();
         let prediction = data;
+
         while (prediction.status !== "succeeded" && prediction.status !== "failed" && prediction.status !== "canceled") {
           statusLabel.innerText = `AI Video ဖန်တီးနေပါသည်... (${prediction.status})`;
           await new Promise(r => setTimeout(r, 4000));
@@ -292,7 +314,7 @@
           outputVideo.src = videoUrl;
           downloadBtn.href = videoUrl;
 
-          // Burmese TTS Engine နှင့် BGM အား ဗီဒီယိုနှင့် ချိတ်ဆက်ခြင်း
+          // Burmese TTS Engine အား ဗီဒီယိုနှင့် ချိတ်ဆက်ခြင်း
           setupAudioPlayback(voiceScript || prompt, lang, bgmType);
 
           loadingState.classList.add('hidden');
