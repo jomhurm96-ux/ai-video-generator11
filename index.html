@@ -21,7 +21,7 @@
         AI Video Studio
       </h1>
       <p class="text-xs md:text-sm text-gray-400 mt-0.5">
-        AI Video + Multi-language Voiceover + BGM Music Player
+        AI Video + Real Burmese AI Voice + BGM Music Player
       </p>
     </div>
     
@@ -48,20 +48,20 @@
         </button>
       </div>
 
-      <!-- Prompt Input (Video Action) -->
+      <!-- Video Action Prompt Input -->
       <div class="flex flex-col gap-1.5">
         <label class="text-xs font-semibold text-gray-400 uppercase">
           Video Visual Prompt (AI လှုပ်ရှားမှုအတွက် အင်္ဂလိပ်လို ရေးပါ)
         </label>
-        <textarea id="prompt-input" rows="2" placeholder="e.g. Cinematic motion, a cute red apple smiling and dancing happily on a table, 3d render" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
+        <textarea id="prompt-input" rows="2" placeholder="e.g. A cute 3D cartoon red apple walking and dancing happily along a sunny garden path, waving hand, cinematic lighting, 4k" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
       </div>
 
-      <!-- Voiceover / Narration Input -->
+      <!-- Voiceover Script Input -->
       <div class="flex flex-col gap-1.5">
         <label class="text-xs font-semibold text-gray-400 uppercase flex items-center gap-1">
           <i data-lucide="mic" class="w-3.5 h-3.5 text-indigo-400"></i> Voiceover Script (အသံထွက်ဖတ်မည့် စာသား)
         </label>
-        <textarea id="voice-script" rows="2" placeholder="ဥပမာ- ရှေးရှေးတုန်းက သစ်သီးဆိုင်လေးထဲမှာ ပျော်ရွှင်စရာ ပန်းသီးလေးတစ်လုံး ရှိပါသတဲ့..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
+        <textarea id="voice-script" rows="2" placeholder="ဥပမာ- မင်္ဂလာပါ... ပျော်ရွှင်စရာ သဘာဝ ဥယျာဉ်လေးထဲကို ကြိုဆိုပါတယ်။" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
       </div>
 
       <!-- Character Consistency -->
@@ -69,7 +69,7 @@
         <label class="text-xs font-semibold text-gray-400 uppercase flex items-center gap-1">
           <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-400"></i> Character ID / Consistency Ref
         </label>
-        <input type="text" id="character-input" placeholder="e.g. #apple_character, big cartoon eyes, red glossy texture" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
+        <input type="text" id="character-input" placeholder="e.g. #apple_character, big cartoon eyes, glossy red texture" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-2.5 text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500" />
       </div>
 
       <!-- Model Selection -->
@@ -157,7 +157,7 @@
       </div>
 
       <div class="text-[11px] text-gray-500 text-center border-t border-gray-800/60 pt-3">
-        Audio Engine Active (Speech Synthesis + BGM Sync)
+        Audio Engine Active (Burmese AI TTS + BGM Sync)
       </div>
     </div>
 
@@ -167,7 +167,7 @@
     lucide.createIcons();
     let currentMode = 'text';
 
-    // BGM Tracks (Royalty Free)
+    // Royalty Free BGM Tracks
     const BGM_TRACKS = {
       cinematic: "https://actions.google.com/sounds/v1/weather/rain_heavy.ogg",
       horror: "https://actions.google.com/sounds/v1/horror/ambient_hum.ogg",
@@ -175,7 +175,7 @@
       none: ""
     };
 
-    // Auto-save Token
+    // Auto-save & Load Token
     const savedToken = localStorage.getItem('replicate_token');
     if (savedToken) document.getElementById('api-key').value = savedToken;
     document.getElementById('api-key').addEventListener('input', (e) => {
@@ -184,37 +184,45 @@
 
     function switchMode(m) {}
 
-    // Audio Playback Synchronization
-    function setupAudioPlayback(scriptText, lang, bgmType) {
+    // Burmese AI Voice & BGM Synchronization
+    function setupAudioPlayback(scriptText, langCode, bgmType) {
       const video = document.getElementById('output-video');
       const bgm = document.getElementById('bgm-player');
       const indicator = document.getElementById('audio-indicator');
       indicator.classList.remove('hidden');
 
+      // Setup Background Music
       if (BGM_TRACKS[bgmType]) {
         bgm.src = BGM_TRACKS[bgmType];
-        bgm.volume = 0.25; // Soft BGM
+        bgm.volume = 0.2;
       } else {
         bgm.removeAttribute('src');
       }
 
-      const speak = () => {
-        if (!scriptText || !('speechSynthesis' in window)) return;
-        window.speechSynthesis.cancel(); // Reset previous
-        const utterance = new SpeechSynthesisUtterance(scriptText);
-        utterance.lang = lang;
-        utterance.rate = 0.95;
-        window.speechSynthesis.speak(utterance);
-      };
+      // Setup Burmese / Multi-language AI Voice
+      let voiceAudio = null;
+      if (scriptText) {
+        const cleanLang = langCode.split('-')[0];
+        voiceAudio = new Audio(`/api/tts?text=${encodeURIComponent(scriptText)}&lang=${cleanLang}`);
+        voiceAudio.volume = 1.0;
+      }
 
       video.onplay = () => {
         if (bgm.src) bgm.play();
-        speak();
+        if (voiceAudio) voiceAudio.play();
       };
 
       video.onpause = () => {
         if (bgm.src) bgm.pause();
-        if ('speechSynthesis' in window) window.speechSynthesis.pause();
+        if (voiceAudio) voiceAudio.pause();
+      };
+
+      video.onended = () => {
+        if (bgm.src) bgm.pause();
+        if (voiceAudio) {
+          voiceAudio.pause();
+          voiceAudio.currentTime = 0;
+        }
       };
     }
 
@@ -236,7 +244,7 @@
         return;
       }
 
-      // လှုပ်ရှားမှု မသေစေရန် Motion Keywords များ အလိုအလျောက် ပေါင်းထည့်ပေးခြင်း
+      // Dynamic motion keywords ပေါင်းထည့်ပေးခြင်း
       let enhancedPrompt = `cinematic video, fluid movement, dynamic motion, ${prompt}`;
       if (charRef) {
         enhancedPrompt += `, Consistent Character: (${charRef})`;
@@ -284,7 +292,7 @@
           outputVideo.src = videoUrl;
           downloadBtn.href = videoUrl;
 
-          // ဗီဒီယိုနှင့် Voice/BGM ချိတ်ဆက်ခြင်း
+          // Burmese TTS Engine နှင့် BGM အား ဗီဒီယိုနှင့် ချိတ်ဆက်ခြင်း
           setupAudioPlayback(voiceScript || prompt, lang, bgmType);
 
           loadingState.classList.add('hidden');
